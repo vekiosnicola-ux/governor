@@ -1,0 +1,92 @@
+{
+  "schema_version": "0.1.0",
+  "id": "system3-task-packet-schema-v0",
+  "worker": "pi",
+  "domain": "system3",
+  "title": "Bootstrap System Three Task Packet Schema and Validation",
+  "description": "Create the v0 JSON task packet contract, template, TypeScript validator, and tests. This is the foundational slice for System Three orchestration.",
+  "slice": "task_packet_schema_and_validation",
+  "objective": "Establish a deterministic, local, additive task packet format with closed nested objects and strict validation.",
+  "risk_tier": "T1",
+  "risk_rationale": "Isolated bootstrap creating only new files; no existing policy, durable memory, or protected paths touched.",
+  "allowed_paths": [
+    ".system3/schemas/task-packet.schema.json",
+    ".system3/tasks/TEMPLATE.task.json",
+    "scripts/system3/validate-task-packet.ts",
+    "tests/system3/task-packet.test.ts"
+  ],
+  "forbidden_paths": [
+    "package.json",
+    "bun.lockb",
+    ".github",
+    "*.secret",
+    "*.key"
+  ],
+  "required_checks": [
+    "bun test tests/system3/task-packet.test.ts",
+    "bun run scripts/system3/validate-task-packet.ts .system3/tasks/TEMPLATE.task.json"
+  ],
+  "approval": {
+    "required": false,
+    "status": "draft",
+    "reason": "T1 slice approved by user; no HITL gate required.",
+    "request_path": null
+  },
+  "memory_policy": {
+    "durable_write": false
+  },
+  "constraints": {
+    "network": false,
+    "new_dependencies": false,
+    "package_manifest_changes": false,
+    "lockfile_changes": false,
+    "ci_changes": false,
+    "secrets": false,
+    "deployment": false,
+    "protected_path_changes": false
+  },
+  "plan": [
+    "Create .system3/schemas/task-packet.schema.json",
+    "Create .system3/tasks/TEMPLATE.task.json",
+    "Create scripts/system3/validate-task-packet.ts",
+    "Create tests/system3/task-packet.test.ts",
+    "Run tests and CLI validation"
+  ],
+  "outputs": [
+    {
+      "path": ".system3/schemas/task-packet.schema.json",
+      "kind": "json_schema",
+      "description": "Informational JSON Schema for the v0 task packet."
+    },
+    {
+      "path": ".system3/tasks/TEMPLATE.task.json",
+      "kind": "task_packet",
+      "description": "Valid example task packet conforming to v0 contract."
+    },
+    {
+      "path": "scripts/system3/validate-task-packet.ts",
+      "kind": "typescript",
+      "description": "Authoritative TypeScript validator for v0 task packets."
+    },
+    {
+      "path": "tests/system3/task-packet.test.ts",
+      "kind": "typescript_test",
+      "description": "Bun test suite for the task packet validator."
+    }
+  ],
+  "created_at": "2024-05-01T18:00:00Z",
+  "status": "draft",
+  "parent_id": null,
+  "expires_at": "2024-05-08T18:00:00Z",
+  "budget": {
+    "max_tokens": 8000,
+    "max_cost_usd": 0.5,
+    "max_files": 4,
+    "max_lines": 600
+  },
+  "failure_policy": {
+    "auto_debug": false,
+    "max_debug_rounds": 0,
+    "stop_on_scope_expansion": true
+  }
+}

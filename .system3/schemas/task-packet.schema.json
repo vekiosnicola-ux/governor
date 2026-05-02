@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$comment": "Informational. The TypeScript validator at scripts/system3/validate-task-packet.ts is the authoritative contract for v0. Modifications require HITL approval.",
+  "title": "System Three Task Packet v0",
+  "description": "Schema for a System Three task packet. Unknown top-level keys are allowed for additive evolution. Nested objects approval, memory_policy, and constraints are closed.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "worker",
+    "domain",
+    "title",
+    "description",
+    "slice",
+    "objective",
+    "risk_tier",
+    "risk_rationale",
+    "allowed_paths",
+    "forbidden_paths",
+    "required_checks",
+    "approval",
+    "memory_policy",
+    "constraints",
+    "plan",
+    "outputs",
+    "created_at",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^0\\.\\d+\\.\\d+$",
+      "description": "Semantic version string. Major version must be 0 in v0."
+    },
+    "id": {
+      "type": "string",
+      "description": "Stable task identifier."
+    },
+    "worker": {
+      "type": "string",
+      "description": "Worker identifier, e.g. pi, claude-code, codex, human."
+    },
+    "domain": {
+      "type": "string",
+      "description": "Work domain, e.g. system3."
+    },
+    "title": {
+      "type": "string",
+      "description": "Short task title."
+    },
+    "description": {
+      "type": "string",
+      "description": "Task description."
+    },
+    "slice": {
+      "type": "string",
+      "description": "Name of the selected System Three slice."
+    },
+    "objective": {
+      "type": "string",
+      "description": "Desired outcome."
+    },
+    "risk_tier": {
+      "type": "string",
+      "enum": ["T0", "T1", "T2", "T3", "T4"],
+      "description": "Risk classification tier."
+    },
+    "risk_rationale": {
+      "type": "string",
+      "description": "Explanation for the risk tier."
+    },
+    "allowed_paths": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "Non-empty array of allowed paths."
+    },
+    "forbidden_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Array of forbidden paths."
+    },
+    "required_checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "Non-empty array of required checks."
+    },
+    "approval": {
+      "type": "object",
+      "description": "Closed object. Unknown keys are rejected.",
+      "required": ["required", "status", "reason", "request_path"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "pending", "approved", "rejected"]
+        },
+        "reason": { "type": "string" },
+        "request_path": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "memory_policy": {
+      "type": "object",
+      "description": "Closed object. Unknown keys are rejected. durable_write must be false in v0.",
+      "required": ["durable_write"],
+      "properties": {
+        "durable_write": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "constraints": {
+      "type": "object",
+      "description": "Closed object with exactly 8 boolean fields. Unknown keys are rejected.",
+      "required": [
+        "network",
+        "new_dependencies",
+        "package_manifest_changes",
+        "lockfile_changes",
+        "ci_changes",
+        "secrets",
+        "deployment",
+        "protected_path_changes"
+      ],
+      "properties": {
+        "network": { "type": "boolean" },
+        "new_dependencies": { "type": "boolean" },
+        "package_manifest_changes": { "type": "boolean" },
+        "lockfile_changes": { "type": "boolean" },
+        "ci_changes": { "type": "boolean" },
+        "secrets": { "type": "boolean" },
+        "deployment": { "type": "boolean" },
+        "protected_path_changes": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "plan": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "Non-empty array of step strings."
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "kind", "description"],
+        "properties": {
+          "path": { "type": "string" },
+          "kind": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "description": "Array of output objects."
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Strict RFC 3339 timestamp."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "ready", "in_progress", "blocked", "complete", "rejected"],
+      "description": "Task status."
+    },
+    "parent_id": {
+      "type": ["string", "null"],
+      "description": "Optional parent task identifier."
+    },
+    "expires_at": {
+      "type": "string",
+      "description": "Optional strict RFC 3339 expiration timestamp."
+    },
+    "budget": {
+      "type": "object",
+      "description": "Optional budget constraints. Shape-only; fields are optional numeric.",
+      "properties": {
+        "max_tokens": { "type": "number" },
+        "max_cost_usd": { "type": "number" },
+        "max_files": { "type": "number" },
+        "max_lines": { "type": "number" }
+      }
+    },
+    "failure_policy": {
+      "type": "object",
+      "description": "Optional failure policy for bounded debug loop.",
+      "properties": {
+        "auto_debug": { "type": "boolean", "default": false },
+        "max_debug_rounds": { "type": "integer", "minimum": 0, "maximum": 2, "default": 0 },
+        "stop_on_scope_expansion": { "type": "boolean", "default": true }
+      }
+    }
+  }
+}

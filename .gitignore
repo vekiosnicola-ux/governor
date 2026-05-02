@@ -1,0 +1,16 @@
+# Execution traces
+.execution/
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+
+# Secrets
+*.secret
+*.key
+
+# OS
+.DS_Store
